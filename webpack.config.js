@@ -20,7 +20,7 @@ module.exports = {
       template: "src/index.html",
     }),
     new CopyPlugin({
-      patterns: [{ from: "./src/img", to: "dest" }],
+      patterns: [{ from: "./src/img", to: "./dest/img" }],
     }),
   ],
   module: {

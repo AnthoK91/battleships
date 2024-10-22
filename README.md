@@ -2,8 +2,11 @@
 
 This is a template for new coding project
 
-Simply run `npm run watch`
-may also need to run `npm audit fix` if it's been a while.
+Simply run:
+
+1. `npm i`
+2. `npm run watch`
+3. (optional) may also need to run `npm audit fix` if it's been a while.
 
 Components installed:
 

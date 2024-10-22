@@ -13,3 +13,4 @@ Components installed:
 - prettier
 
 initially there will be an error in the img folder, because there are no images inside. If no images are required for the project, simply delete the folder from src.
+# battleships

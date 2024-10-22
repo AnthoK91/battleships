@@ -7,7 +7,7 @@ may also need to run `npm audit fix` if it's been a while.
 
 Components installed:
 
-- webpack
+- webpack, including copy src/img to dist/img
 - eslint
 - vitest (moved away from jest to avoid config hell - followed this guide https://dev.to/colin-williams-dev/testing-w-vitest-wo-vite-5820)
 - prettier

@@ -1,0 +1,74 @@
+table,
+tr,
+tbody {
+  border-spacing: 0px;
+  margin: 5px;
+  padding: 0px;
+}
+
+.rotated {
+  transform: rotate(90deg);
+}
+
+h3 {
+  margin: 0px;
+}
+
+#carrier,
+#computer-carrier {
+  max-height: 180px;
+}
+
+#submarine,
+#battleship,
+#computer-submarine,
+#computer-battleship {
+  max-height: 100px;
+}
+
+#destroyer,
+#vessel,
+#computer-destroyer,
+#computer-vessel {
+  max-height: 50px;
+}
+
+.imgBox {
+  display: flex;
+  align-items: flex-end;
+}
+
+.gameboard {
+  display: flex;
+  max-height: 300px;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+.vl {
+  border-left: 6px solid green;
+  height: 100vh;
+}
+
+img {
+  margin: 0px;
+}
+
+.row-data {
+  margin: 5px;
+  padding: 0px;
+  border-spacing: 0px;
+  max-height: 30px;
+}
+body {
+  margin: 0px;
+}
+
+.grid {
+  border: 1px solid blue;
+}
+
+.grid-box {
+  border: 1px solid blue;
+  height: 30px;
+  width: 30px;
+}

@@ -4,7 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "development",
-  watch: "true",
+  watch: true,
   entry: {
     index: "./src/index.js",
   },
@@ -20,7 +20,7 @@ module.exports = {
       template: "src/index.html",
     }),
     new CopyPlugin({
-      patterns: [{ from: "./src/img", to: "./dest/img" }],
+      patterns: [{ from: "./src/img", to: "./img/" }],
     }),
   ],
   module: {

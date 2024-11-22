@@ -5,6 +5,8 @@
 // Gameboards should keep track of missed attacks so they can display them properly.
 // Gameboards should be able to report whether or not all of their ships have been sunk.
 
+import { computerPlayer } from "./players";
+
 //Aspect = North, South, East, West
 //yCo = where the starting pos of the placement is on the y axis
 //xCo = where the starting pos of the placement is on the x axis
@@ -12,35 +14,86 @@
 //Idea is that you choose an X/Y starting spot, and an aspect. Then we do an if formula to check that you can place there. If you can't becuse you're out of bounds throw an error.
 //If you can place there, push an o to the gameboard array, and sequentially push based on the aspect (N,E,S,W) until the length of the ship has been reached.
 
-export function placeShip(yCo, xCo, player, aspect, shipType) {
-  // Prevent xCo or yCo being out of bounds
-  //todo: do I need to add the ship length + yCo/xCo within the aspect to initially determine whether or not the ship is within bounds?
+function isPlacementValid(yCo, xCo, player, aspect, shipType) {
+  const shipLength = player.ships[shipType].length;
+  let tempY = yCo;
+  let tempX = xCo;
 
-  if (yCo >= 8 || xCo >= 8 || player.gameboard[yCo][xCo] === "x") {
-    return "placement out of bounds or taken";
+  for (let index = 0; index < shipLength; index++) {
+    // Check if the current coordinates are out of bounds
+    if (
+      tempY < 0 ||
+      tempY >= player.gameboard.length ||
+      tempX < 0 ||
+      tempX >= player.gameboard[0].length
+    ) {
+      console.error(`Out of bounds: yCo=${tempY}, xCo=${tempX}`);
+      return false;
+    }
+
+    // Check if the cell is already occupied
+    if (player.gameboard[tempY][tempX] === "x") {
+      console.error(`Overlap detected at: yCo=${tempY}, xCo=${tempX}`);
+      return false;
+    }
+
+    // Adjust tempY and tempX based on the aspect for the next cell
+    switch (aspect) {
+      case "north":
+        tempY--;
+        break;
+      case "east":
+        tempX++;
+        break;
+      case "south":
+        tempY++;
+        break;
+      case "west":
+        tempX--;
+        break;
+    }
+  }
+
+  // If all checks pass, the placement is valid
+  return true;
+}
+
+export function placeShip(yCo, xCo, player, aspect, shipType) {
+  if (isPlacementValid(yCo, xCo, player, aspect, shipType) === false) {
+    if (player === computerPlayer) {
+      const randInt = Math.floor(Math.random() * player.gameboard.length);
+      placeShip(randInt, randInt, computerPlayer, aspect, shipType);
+      console.log(computerPlayer.gameboard);
+    } else {
+      return "out of bounds";
+    }
   } else {
+    // Reset the ship's coordinates
+    player.ships[shipType].coords = [];
+
+    let tempY = yCo;
+    let tempX = xCo;
     for (let index = 0; index < player.ships[shipType].length; index++) {
-      if (yCo >= 8 || xCo >= 8 || player.gameboard[yCo][xCo] === "x") {
-        return "placement out of bounds";
-      } else {
-        player.gameboard[yCo][xCo] = "x";
-        player.ships[shipType].coords.push([yCo, xCo]);
-        switch (aspect) {
-          case "north":
-            yCo--;
-            break;
-          case "east":
-            xCo++;
-            break;
-          case "south":
-            yCo++;
-            break;
-          case "west":
-            xCo--;
-            break;
-        }
+      player.gameboard[tempY][tempX] = "x";
+      player.ships[shipType].coords.push([tempY, tempX]);
+
+      // Adjust tempY and tempX based on the aspect for the next cell
+      switch (aspect) {
+        case "north":
+          tempY--;
+          break;
+        case "east":
+          tempX++;
+          break;
+        case "south":
+          tempY++;
+          break;
+        case "west":
+          tempX--;
+          break;
       }
     }
+    return "success";
   }
 }
 

@@ -1,18 +1,97 @@
 import { humanPlayer, computerPlayer } from "./players";
 import { placeShip, receiveAttack } from "./gameboard";
 import { placeRandomAttack, getRandomInt } from "./computerTurn";
+import { shipsConfig } from "./htmlChangeAspect";
 
-function createGridElement(x, y) {
+function createGridElement(x, y, player) {
   const rows = document.querySelectorAll(".row-data");
-  const lastRow = rows[rows.length - 1]; // Get the most recently added row
+  const lastRow = rows[rows.length - 1];
   const newImg = document.createElement("img");
   newImg.src = "./img/image.png";
-  newImg.className = "grid-box";
 
+  // Set class based on player
+  if (player === humanPlayer) {
+    newImg.className = "grid-box human-grid-box";
+  } else {
+    newImg.className = "grid-box computer-grid-box";
+  }
+
+  // Set attributes for x and y coordinates
   newImg.style.margin = "1px";
   newImg.setAttribute("y-data", y);
   newImg.setAttribute("x-data", x);
+
+  // Add event listeners
+  if (player === humanPlayer) {
+    // Add dragover and drop event listeners
+    newImg.addEventListener("dragover", (event) => {
+      event.preventDefault(); // Allow the drop
+    });
+    newImg.addEventListener("drop", dropHandler); // Use dropHandler function
+  } else {
+    // For computer grid, add click event listener for attacks
+    newImg.addEventListener("click", handlePlayerClick);
+  }
+
   lastRow.append(newImg);
+}
+
+function dropHandler(event) {
+  event.preventDefault();
+
+  const shipType = event.dataTransfer.getData("text/plain");
+  console.log("Dropped shipType:", shipType);
+
+  if (!shipType) {
+    console.error("No shipType found in dataTransfer.");
+    return;
+  }
+
+  const configEntry = shipsConfig.find((config) => config.shipId === shipType);
+
+  if (!configEntry) {
+    console.error(`Ship ID "${shipType}" not found in shipsConfig.`);
+    return;
+  }
+
+  const aspectElement = document.querySelector(`#${configEntry.aspectId}`);
+  if (!aspectElement) {
+    console.error(`Aspect element not found for "${shipType}"`);
+    return;
+  }
+
+  const aspect = aspectElement.textContent.split(": ")[1];
+  const x = parseInt(event.target.getAttribute("x-data"));
+  const y = parseInt(event.target.getAttribute("y-data"));
+
+  const result = placeShip(y, x, humanPlayer, aspect.toLowerCase(), shipType);
+
+  if (result === "out of bounds") {
+    console.log("Invalid placement!");
+  } else {
+    console.log(`Placed ${shipType} at (${y}, ${x}) facing ${aspect}`);
+    document.getElementById(shipType).draggable = false; // Disable further dragging
+
+    // Update the aspect text to indicate the ship is placed
+    aspectElement.textContent = `Ship Placed`;
+
+    // Get the ship's coordinates
+    const shipCoords = humanPlayer.ships[shipType].coords;
+
+    // Update the grid cells by changing the border to blue
+    shipCoords.forEach(([yCoord, xCoord]) => {
+      const gridCell = document.querySelector(
+        `.human-grid-box[x-data="${xCoord}"][y-data="${yCoord}"]`
+      );
+
+      if (gridCell) {
+        // Change the border to blue
+        gridCell.style.border = "2px solid blue";
+      } else {
+        console.error(`Grid cell not found at x=${xCoord}, y=${yCoord}`);
+      }
+    });
+  }
 }
 
 const humanTable = document.querySelector(".human-rows");
@@ -33,29 +112,48 @@ function createBoard(player) {
     let y = index;
     createNewRows(player);
     for (let index = 0; index < player.gameboard[0].length; index++) {
-      createGridElement(index, y);
+      createGridElement(index, y, player);
     }
   }
 }
 
-function placeShipDummyData() {
-  placeShip(5, 5, humanPlayer, "north", "carrier");
-  placeShip(4, 4, humanPlayer, "north", "battleship");
-  placeShip(3, 3, humanPlayer, "north", "submarine");
-  placeShip(2, 2, humanPlayer, "north", "vessel");
-  placeShip(1, 1, humanPlayer, "north", "destroyer");
+// placeShip(5, 5, humanPlayer, "north", "carrier");
+// placeShip(4, 4, humanPlayer, "north", "battleship");
+// placeShip(3, 3, humanPlayer, "north", "submarine");
+// placeShip(2, 2, humanPlayer, "north", "vessel");
+// placeShip(1, 1, humanPlayer, "north", "destroyer");
 
-  placeShip(5, 5, computerPlayer, "north", "carrier");
-  placeShip(4, 4, computerPlayer, "north", "battleship");
-  placeShip(3, 3, computerPlayer, "north", "submarine");
-  placeShip(2, 2, computerPlayer, "north", "vessel");
-  placeShip(1, 1, computerPlayer, "north", "destroyer");
+function placeComputerShips() {
+  function randInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+  function aspect() {
+    const number = randInt(4);
+    switch (number) {
+      case 0:
+        return "north";
+      case 1:
+        return "east";
+
+      case 2:
+        return "south";
+
+      case 3:
+        return "west";
+    }
+    return aspect;
+  }
+  placeShip(randInt(8), randInt(8), computerPlayer, aspect(), "carrier");
+  placeShip(randInt(8), randInt(8), computerPlayer, aspect(), "battleship");
+  placeShip(randInt(8), randInt(8), computerPlayer, aspect(), "submarine");
+  placeShip(randInt(8), randInt(8), computerPlayer, aspect(), "vessel");
+  placeShip(randInt(8), randInt(8), computerPlayer, aspect(), "destroyer");
+  console.table(computerPlayer.gameboard);
 }
-function startGame() {
+export function startGame() {
   createBoard(humanPlayer);
   createBoard(computerPlayer);
-  placeShipDummyData();
-  nextTurn(); // Start the first turn
+  placeComputerShips();
 }
 
 function nextTurn() {
@@ -111,5 +209,3 @@ function handlePlayerClick(event) {
   turnTracker++;
   nextTurn();
 }
-
-startGame();

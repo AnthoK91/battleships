@@ -1,9 +1,15 @@
-table,
-tr,
+table {
+  border-collapse: separate; /* Prevents collapsing borders */
+}
+
+tr {
+  padding: 0;
+  margin: 0;
+}
+
 tbody {
-  border-spacing: 0px;
-  margin: 5px;
-  padding: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 .rotated {
@@ -68,7 +74,17 @@ body {
 }
 
 .grid-box {
+  display: inline-block; /* Ensures consistent margin */
+  box-sizing: border-box; /* Includes border in dimensions */
   border: 1px solid blue;
   height: 30px;
   width: 30px;
+  margin: 2px; /* Applied margin */
+}
+
+.human-rows,
+.computer-rows {
+  display: flex; /* Allows spacing to be respected */
+  flex-wrap: wrap; /* Ensures grid items wrap if needed */
+  gap: 2px; /* Alternative way to enforce consistent spacing */
 }

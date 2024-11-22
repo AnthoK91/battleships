@@ -8,6 +8,7 @@ function createGridElement(x, y, player) {
   const lastRow = rows[rows.length - 1];
   const newImg = document.createElement("img");
   newImg.src = "./img/image.png";
+  newImg.style.margin = "2px"; // Explicit inline margin
 
   // Set class based on player
   if (player === humanPlayer) {
@@ -17,9 +18,16 @@ function createGridElement(x, y, player) {
   }
 
   // Set attributes for x and y coordinates
-  newImg.style.margin = "1px";
   newImg.setAttribute("y-data", y);
   newImg.setAttribute("x-data", x);
+
+  // Debug computed margin
+  newImg.onload = () => {
+    console.log(
+      `Grid cell at (${x}, ${y}):`,
+      window.getComputedStyle(newImg).margin
+    );
+  };
 
   // Add event listeners
   if (player === humanPlayer) {
@@ -86,7 +94,7 @@ function dropHandler(event) {
 
       if (gridCell) {
         // Change the border to blue
-        gridCell.style.border = "2px solid blue";
+        gridCell.style.border = "1px solid blue";
       } else {
         console.error(`Grid cell not found at x=${xCoord}, y=${yCoord}`);
       }
